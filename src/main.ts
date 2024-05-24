@@ -19,17 +19,20 @@ input.placeholder = "Enter Move";
 input.autofocus = true;
 input.onblur = () => input.focus();
 input.onchange = () => {
-  const move = input.value;
+  const moveInput = input.value;
   const chess = new Chess(game.fen());
-  try {
-    const moveObj = chess.move(move);
+  const validMoves = chess.moves({ verbose: true });
+  const formattedMove = validMoves.find(m => m.san.toLowerCase() === moveInput.toLowerCase());
+
+  if (formattedMove) {
+    const moveObj = chess.move(formattedMove.san);
     if (moveObj) {
       ground.move(moveObj.from, moveObj.to);
       playOtherSide(ground, game)(moveObj.from, moveObj.to);
       input.value = "";
     }
-  } catch (e) {
-    console.log(e);
+  } else {
+    console.log("Invalid move");
   }
 };
 app.appendChild(input);
